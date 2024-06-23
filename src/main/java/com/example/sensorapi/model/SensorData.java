@@ -3,12 +3,14 @@ package com.example.sensorapi.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+
 import java.time.LocalDateTime;
 
 @Document(collection = "sensors")
 public class SensorData {
     @Id
     private String id;
+
     private String uid;
     private Double value;
     private String type;
