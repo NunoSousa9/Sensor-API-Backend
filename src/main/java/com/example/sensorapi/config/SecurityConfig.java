@@ -1,6 +1,8 @@
 package com.example.sensorapi.config;
 
 import com.example.sensorapi.security.AuthProvider;
+import com.example.sensorapi.security.CustomAuthenticationFailureHandler;
+import com.example.sensorapi.security.CustomAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,33 +17,43 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private AuthProvider authProvider;
+    private final AuthProvider authProvider;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    public SecurityConfig(AuthProvider authProvider, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler, CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
+        this.authProvider = authProvider;
+        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
+        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/auth/login").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/auth/login")
-                        .usernameParameter("username")
-                        .passwordParameter("password")
-                        .permitAll()
-                );
-
-        return http.build();
-    }
-
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authProvider);
     }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+                .authorizeHttpRequests()
+                    .requestMatchers("/auth/login").permitAll()
+                    .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                    .loginProcessingUrl("/auth/login")
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+                    .successHandler(customAuthenticationSuccessHandler)
+                    .failureHandler(customAuthenticationFailureHandler)
+                    .permitAll();
+
+        return http.build();
+    }
+
+
 }
