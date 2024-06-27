@@ -54,4 +54,9 @@ public class SensorController {
                     return ResponseEntity.ok().<Void>build();
                 }).orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/test")
+    public String testEndpoint() {
+        return "Test endpoint for Swagger UI";
+    }
 }
