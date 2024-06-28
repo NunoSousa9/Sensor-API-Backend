@@ -1,12 +1,17 @@
 package com.example.sensorapi.controller;
 
+import com.example.sensorapi.model.LuminositySensor;
 import com.example.sensorapi.model.SensorData;
-import com.example.sensorapi.repository.SensorRepository;
+import com.example.sensorapi.model.TemperatureSensor;
+import com.example.sensorapi.service.LuminositySensorService;
+import com.example.sensorapi.service.TemperatureSensorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -14,50 +19,75 @@ import java.util.List;
 public class SensorController {
 
     @Autowired
-    private SensorRepository sensorRepository;
+    private TemperatureSensorService temperatureSensorService;
+
+    @Autowired
+    private LuminositySensorService luminositySensorService;
+
+    @Autowired
+    private TemperatureSensorController temperatureSensorController;
+
+    @Autowired
+    private LuminositySensorController luminositySensorController;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @GetMapping
     public List<SensorData> getAllSensors() {
-        return sensorRepository.findAll();
+        List<SensorData> allSensors = new ArrayList<>();
+        allSensors.addAll(temperatureSensorService.findAll());
+        allSensors.addAll(luminositySensorService.findAll());
+        return allSensors;
     }
 
-    @PostMapping
-    public SensorData createSensor(@RequestBody SensorData sensorData) {
-        return sensorRepository.save(sensorData);
+    @GetMapping("/temperature")
+    public List<TemperatureSensor> getTemperatureSensors() {
+        temperatureSensorController = applicationContext.getBean(TemperatureSensorController.class);
+        return temperatureSensorController.getAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<SensorData> getSensorById(@PathVariable String id) {
-        return sensorRepository.findById(id)
-                .map(sensorData -> ResponseEntity.ok().body(sensorData))
-                .orElse(ResponseEntity.notFound().build());
+    @PostMapping("/temperature")
+    public TemperatureSensor createTemperatureSensor(@RequestBody @Valid TemperatureSensor temperatureSensor) {
+        temperatureSensor.setType("temperature");
+        temperatureSensorController = applicationContext.getBean(TemperatureSensorController.class);
+        return temperatureSensorController.createSensor(temperatureSensor);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SensorData> updateSensor(@PathVariable String id, @Valid @RequestBody SensorData sensorDetails) {
-        return sensorRepository.findById(id)
-                .map(sensorData -> {
-                    sensorData.setUid(sensorDetails.getUid());
-                    sensorData.setValue(sensorDetails.getValue());
-                    sensorData.setType(sensorDetails.getType());
-                    sensorData.setTimestamp(sensorDetails.getTimestamp());
-                    SensorData updateSensor = sensorRepository.save(sensorData);
-                    return ResponseEntity.ok().body(updateSensor);
-                }).orElse(ResponseEntity.notFound().build());
+    @PutMapping("/temperature/{id}")
+    public ResponseEntity<TemperatureSensor> updateTemperatureSensor(@PathVariable String id, @RequestBody @Valid TemperatureSensor temperatureSensorDetails) {
+        temperatureSensorController = applicationContext.getBean(TemperatureSensorController.class);
+        return temperatureSensorController.updateSensor(id, temperatureSensorDetails);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSensor(@PathVariable String id) {
-        return sensorRepository.findById(id)
-                .map(sensorData -> {
-                    sensorRepository.delete(sensorData);
-                    return ResponseEntity.ok().<Void>build();
-                }).orElse(ResponseEntity.notFound().build());
+    @DeleteMapping("/temperature/{id}")
+    public ResponseEntity<Void> deleteTemperatureSensor(@PathVariable String id) {
+        temperatureSensorController = applicationContext.getBean(TemperatureSensorController.class);
+        return temperatureSensorController.deleteSensor(id);
     }
 
-    @GetMapping("/test")
-    public String testEndpoint() {
-        return "Test endpoint for Swagger UI";
+    @GetMapping("/luminosity")
+    public List<LuminositySensor> getLuminositySensors() {
+        luminositySensorController = applicationContext.getBean(LuminositySensorController.class);
+        return luminositySensorController.getAll();
     }
 
+    @PostMapping("/luminosity")
+    public LuminositySensor createLuminositySensor(@RequestBody @Valid LuminositySensor luminositySensor) {
+        luminositySensor.setType("luminosity");
+        luminositySensorController = applicationContext.getBean(LuminositySensorController.class);
+        return luminositySensorController.createSensor(luminositySensor);
+    }
+
+    @PutMapping("/luminosity/{id}")
+    public ResponseEntity<LuminositySensor> updateLuminositySensor(@PathVariable String id, @RequestBody @Valid LuminositySensor luminositySensorDetails) {
+        luminositySensorController = applicationContext.getBean(LuminositySensorController.class);
+        return luminositySensorController.updateSensor(id, luminositySensorDetails);
+    }
+
+    @DeleteMapping("/luminosity/{id}")
+    public ResponseEntity<Void> deleteLuminositySensor(@PathVariable String id) {
+        luminositySensorController = applicationContext.getBean(LuminositySensorController.class);
+        return luminositySensorController.deleteSensor(id);
+    }
 }

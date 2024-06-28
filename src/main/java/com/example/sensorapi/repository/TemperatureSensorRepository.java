@@ -1,9 +1,9 @@
 package com.example.sensorapi.repository;
 
-import com.example.sensorapi.model.SensorData;
+import com.example.sensorapi.model.TemperatureSensor;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SensorRepository extends MongoRepository<SensorData, String> {
+public interface TemperatureSensorRepository extends MongoRepository<TemperatureSensor, String> {
 }
