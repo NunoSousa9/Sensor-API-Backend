@@ -59,4 +59,5 @@ public class SensorController {
     public String testEndpoint() {
         return "Test endpoint for Swagger UI";
     }
+
 }

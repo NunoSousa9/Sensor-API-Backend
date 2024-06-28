@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -41,20 +42,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeHttpRequests()
-                    .requestMatchers("/auth/login").permitAll()
-                    .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                    .anyRequest().authenticated()
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                .requestMatchers("/auth/login").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    .loginProcessingUrl("/auth/login")
-                    .usernameParameter("username")
-                    .passwordParameter("password")
-                    .successHandler(customAuthenticationSuccessHandler)
-                    .failureHandler(customAuthenticationFailureHandler)
-                    .permitAll();
+                .loginProcessingUrl("/auth/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .successHandler(customAuthenticationSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
+                .permitAll();
 
         return http.build();
     }
-
 
 }
