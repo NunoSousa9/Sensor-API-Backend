@@ -23,10 +23,10 @@ public class AuthController {
         String username = loginData.get("username");
         String password = loginData.get("password");
 
-        if ("user".equals(username) && passwordEncoder.matches(password, "$2a$10$2wz9hVs1Mg0eCOPBgz2mHeeROraJfEJw5C1z8SvHGPDEPGw6VgZIu")) {
+        String encodedPassword = "$2a$10$2wz9hVs1Mg0eCOPBgz2mHeeROraJfEJw5C1z8SvHGPDEPGw6VgZIu";
 
+        if ("user".equals(username) && passwordEncoder.matches(password, encodedPassword)) {
             String token = "fake-jwt-token";
-
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             return ResponseEntity.ok(response);

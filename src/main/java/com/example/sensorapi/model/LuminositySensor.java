@@ -6,7 +6,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Document(collection = "luminosity_sensors")
-public class LuminositySensor extends SensorData{
+public class LuminositySensor extends SensorData {
 
     @NotNull(message = "Value cannot be null")
     @Min(value = 0, message = "Value must be greater than or equal to 0")
@@ -30,3 +30,4 @@ public class LuminositySensor extends SensorData{
         }
     }
 }
+

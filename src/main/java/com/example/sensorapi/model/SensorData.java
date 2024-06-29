@@ -1,5 +1,6 @@
 package com.example.sensorapi.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -54,4 +55,5 @@ public abstract class SensorData {
 
     public abstract Object getValue();
     public abstract void setValue(Object value);
+
 }

@@ -23,6 +23,7 @@ public class TemperatureSensorService {
     }
 
     public TemperatureSensor save(TemperatureSensor sensor) {
+        sensor.setType("temperature");
         return repository.save(sensor);
     }
 

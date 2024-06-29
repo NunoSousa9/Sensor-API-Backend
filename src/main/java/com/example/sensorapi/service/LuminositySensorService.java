@@ -22,6 +22,7 @@ public class LuminositySensorService {
     }
 
     public LuminositySensor save(LuminositySensor sensor) {
+        sensor.setType("luminosity");
         return repository.save(sensor);
     }
 
