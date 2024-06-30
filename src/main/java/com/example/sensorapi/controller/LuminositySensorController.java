@@ -3,58 +3,47 @@ package com.example.sensorapi.controller;
 import com.example.sensorapi.model.LuminositySensor;
 import com.example.sensorapi.service.LuminositySensorService;
 import com.example.sensorapi.security.TokenUtil;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sensors/luminosity")
 public class LuminositySensorController {
 
-    private final LuminositySensorService luminositySensorService;
-
-    public LuminositySensorController(LuminositySensorService luminositySensorService) {
-        this.luminositySensorService = luminositySensorService;
-    }
+    @Autowired
+    private LuminositySensorService luminositySensorService;
 
     @GetMapping
-    public ResponseEntity<List<LuminositySensor>> getAll(HttpServletRequest request) {
-        TokenUtil.validateToken(request);
-        List<LuminositySensor> sensors = luminositySensorService.findAll();
-        return ResponseEntity.ok(sensors);
+    public List<LuminositySensor> getAll() {
+        return luminositySensorService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LuminositySensor> getSensorById(@PathVariable String id, HttpServletRequest request) {
-        TokenUtil.validateToken(request);
-        return luminositySensorService.findById(id)
-                .map(sensor -> ResponseEntity.ok().body(sensor))
-                .orElse(ResponseEntity.notFound().build());
+    public Optional<LuminositySensor> getSensorById(@PathVariable String id) {
+        return luminositySensorService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<LuminositySensor> createSensor(@RequestBody @Valid LuminositySensor sensorData, HttpServletRequest request) {;
-        TokenUtil.validateToken(request);
-        LuminositySensor savedSensor = luminositySensorService.save(sensorData);
-        return ResponseEntity.ok(savedSensor);
+    public LuminositySensor createSensor(@RequestBody @Valid LuminositySensor sensorData) {
+        sensorData.setType("luminosity");
+        return luminositySensorService.save(sensorData);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LuminositySensor> updateSensor(@PathVariable String id, @RequestBody LuminositySensor sensorDetails, HttpServletRequest request) {
-        TokenUtil.validateToken(request);
+    public LuminositySensor updateSensor(@PathVariable String id, @RequestBody LuminositySensor sensorDetails) {
         sensorDetails.setId(id);
-        LuminositySensor updatedSensor = luminositySensorService.save(sensorDetails);
-        return ResponseEntity.ok(updatedSensor);
+        return luminositySensorService.save(sensorDetails);
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSensor(@PathVariable String id, HttpServletRequest request) {
-        TokenUtil.validateToken(request);
+    public void deleteSensor(@PathVariable String id) {
         luminositySensorService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }

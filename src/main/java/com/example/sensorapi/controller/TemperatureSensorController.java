@@ -3,56 +3,49 @@ package com.example.sensorapi.controller;
 import com.example.sensorapi.model.TemperatureSensor;
 import com.example.sensorapi.security.TokenUtil;
 import com.example.sensorapi.service.TemperatureSensorService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/sensors/temperature")
 public class TemperatureSensorController {
 
-    private final TemperatureSensorService temperatureSensorService;
-
-    public TemperatureSensorController(TemperatureSensorService temperatureSensorService) {
-        this.temperatureSensorService = temperatureSensorService;
-    }
+    @Autowired
+    private TemperatureSensorService temperatureSensorService;
 
     @GetMapping
-    public ResponseEntity<List<TemperatureSensor>> getAll(HttpServletRequest request) {
-        TokenUtil.validateToken(request);
-        List<TemperatureSensor> sensors = temperatureSensorService.findAll();
-        return ResponseEntity.ok(sensors);
+    public List<TemperatureSensor> getAll() {
+        return temperatureSensorService.findAll();
+
     }
 
     @GetMapping("/id")
-    public ResponseEntity<TemperatureSensor> getSensorById(@PathVariable String id, HttpServletRequest request) {
-        TokenUtil.validateToken(request);
-        return temperatureSensorService.findById(id)
-                .map(sensor -> ResponseEntity.ok().body(sensor))
-                .orElse(ResponseEntity.notFound().build());
+    public Optional<TemperatureSensor> getSensorById(@PathVariable String id) {
+        return temperatureSensorService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<TemperatureSensor> createSensor(@RequestBody TemperatureSensor sensorData, HttpServletRequest request) {
-        TokenUtil.validateToken(request);
-        TemperatureSensor savedSensor = temperatureSensorService.save(sensorData);
-        return ResponseEntity.ok(savedSensor);
+    public TemperatureSensor createSensor(@RequestBody @Valid TemperatureSensor sensorData) {
+        sensorData.setType("temperature");
+        return temperatureSensorService.save(sensorData);
+
     }
 
     @PutMapping("/id")
-    public ResponseEntity<TemperatureSensor> updateSensor(@PathVariable String id, @RequestBody TemperatureSensor sensorDetails, HttpServletRequest request) {
-        TokenUtil.validateToken(request);
+    public TemperatureSensor updateSensor(@PathVariable String id, @RequestBody TemperatureSensor sensorDetails) {
         sensorDetails.setId(id);
-        TemperatureSensor updatedSensor = temperatureSensorService.save(sensorDetails);
-        return ResponseEntity.ok(updatedSensor);
+        return temperatureSensorService.save(sensorDetails);
+
     }
 
     @DeleteMapping("/id")
-    public ResponseEntity<Void> deleteSensor(@PathVariable String id, HttpServletRequest request) {
-        TokenUtil.validateToken(request);
+    public void deleteSensor(@PathVariable String id) {
         temperatureSensorService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }

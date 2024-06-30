@@ -30,7 +30,7 @@ public class SecurityConfig {
         this.authProvider = authProvider;
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -54,7 +54,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/auth/login", "/sensors/**", "/sensors/temperature", "/sensors/luminosity").permitAll()
+                                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/auth/login").permitAll()
+                                .requestMatchers("/sensors/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .formLogin(formLogin ->
