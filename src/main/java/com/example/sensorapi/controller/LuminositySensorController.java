@@ -6,7 +6,9 @@ import com.example.sensorapi.security.TokenUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,21 +22,22 @@ public class LuminositySensorController {
     }
 
     @GetMapping
-    public List<LuminositySensor> getAll(HttpServletRequest request) {
+    public ResponseEntity<List<LuminositySensor>> getAll(HttpServletRequest request) {
         TokenUtil.validateToken(request);
-        return luminositySensorService.findAll();
+        List<LuminositySensor> sensors = luminositySensorService.findAll();
+        return ResponseEntity.ok(sensors);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LuminositySensor> getSensorById(@PathVariable String id, HttpServletRequest request) {
         TokenUtil.validateToken(request);
         return luminositySensorService.findById(id)
-                .map(sensorData -> ResponseEntity.ok().body(sensorData))
+                .map(sensor -> ResponseEntity.ok().body(sensor))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<LuminositySensor> createSensor(@RequestBody LuminositySensor sensorData, HttpServletRequest request) {;
+    public ResponseEntity<LuminositySensor> createSensor(@RequestBody @Valid LuminositySensor sensorData, HttpServletRequest request) {;
         TokenUtil.validateToken(request);
         LuminositySensor savedSensor = luminositySensorService.save(sensorData);
         return ResponseEntity.ok(savedSensor);
@@ -44,8 +47,8 @@ public class LuminositySensorController {
     public ResponseEntity<LuminositySensor> updateSensor(@PathVariable String id, @RequestBody LuminositySensor sensorDetails, HttpServletRequest request) {
         TokenUtil.validateToken(request);
         sensorDetails.setId(id);
-        LuminositySensor updatedSensorDetails = luminositySensorService.save(sensorDetails);
-        return ResponseEntity.ok(updatedSensorDetails);
+        LuminositySensor updatedSensor = luminositySensorService.save(sensorDetails);
+        return ResponseEntity.ok(updatedSensor);
     }
 
     @DeleteMapping("/{id}")

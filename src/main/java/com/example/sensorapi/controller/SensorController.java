@@ -4,10 +4,11 @@ import com.example.sensorapi.model.SensorData;
 import com.example.sensorapi.service.LuminositySensorService;
 import com.example.sensorapi.service.TemperatureSensorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
+import jakarta.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +23,10 @@ public class SensorController {
     private LuminositySensorService luminositySensorService;
 
     @GetMapping
-    public List<SensorData> getAllSensors() {
+    public ResponseEntity<List<SensorData>> getAllSensors(HttpServletRequest request) {
         List<SensorData> allSensors = new ArrayList<>();
         allSensors.addAll(temperatureSensorService.findAll());
         allSensors.addAll(luminositySensorService.findAll());
-        return allSensors;
+        return ResponseEntity.ok(allSensors);
     }
 }

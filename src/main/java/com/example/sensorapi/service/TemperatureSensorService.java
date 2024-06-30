@@ -3,6 +3,7 @@ package com.example.sensorapi.service;
 import com.example.sensorapi.model.TemperatureSensor;
 import com.example.sensorapi.repository.TemperatureSensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

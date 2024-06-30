@@ -3,10 +3,12 @@ package com.example.sensorapi.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 
+@Component
 public class TokenUtil {
 
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
@@ -29,5 +31,9 @@ public class TokenUtil {
         } catch (Exception e) {
             throw new RuntimeException("Unauthorized");
         }
+    }
+
+    public Key getKey() {
+        return key;
     }
 }

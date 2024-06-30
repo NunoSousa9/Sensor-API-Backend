@@ -6,7 +6,7 @@ import com.example.sensorapi.service.TemperatureSensorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -20,16 +20,17 @@ public class TemperatureSensorController {
     }
 
     @GetMapping
-    public List<TemperatureSensor> getAll(HttpServletRequest request) {
+    public ResponseEntity<List<TemperatureSensor>> getAll(HttpServletRequest request) {
         TokenUtil.validateToken(request);
-        return temperatureSensorService.findAll();
+        List<TemperatureSensor> sensors = temperatureSensorService.findAll();
+        return ResponseEntity.ok(sensors);
     }
 
     @GetMapping("/id")
     public ResponseEntity<TemperatureSensor> getSensorById(@PathVariable String id, HttpServletRequest request) {
         TokenUtil.validateToken(request);
         return temperatureSensorService.findById(id)
-                .map(sensorData -> ResponseEntity.ok().body(sensorData))
+                .map(sensor -> ResponseEntity.ok().body(sensor))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -44,8 +45,8 @@ public class TemperatureSensorController {
     public ResponseEntity<TemperatureSensor> updateSensor(@PathVariable String id, @RequestBody TemperatureSensor sensorDetails, HttpServletRequest request) {
         TokenUtil.validateToken(request);
         sensorDetails.setId(id);
-        TemperatureSensor updatedSensorDetails = temperatureSensorService.save(sensorDetails);
-        return ResponseEntity.ok(updatedSensorDetails);
+        TemperatureSensor updatedSensor = temperatureSensorService.save(sensorDetails);
+        return ResponseEntity.ok(updatedSensor);
     }
 
     @DeleteMapping("/id")
