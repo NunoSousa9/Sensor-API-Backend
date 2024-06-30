@@ -1,4 +1,4 @@
-package com.example.sensorapi;}
+package com.example.sensorapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
