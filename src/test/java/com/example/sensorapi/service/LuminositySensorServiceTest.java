@@ -1,9 +1,7 @@
 package com.example.sensorapi.service;
 
 import com.example.sensorapi.model.LuminositySensor;
-import com.example.sensorapi.model.TemperatureSensor;
 import com.example.sensorapi.repository.LuminositySensorRepository;
-import com.example.sensorapi.repository.TemperatureSensorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

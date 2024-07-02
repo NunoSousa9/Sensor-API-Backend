@@ -10,8 +10,10 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 public class TemperatureSensorServiceTest {
@@ -28,10 +30,12 @@ public class TemperatureSensorServiceTest {
     }
 
     @Test
-    public void testFindAll() {
+    public void testGetAllSensors() {
         when(repository.findAll()).thenReturn(Arrays.asList(new TemperatureSensor(), new TemperatureSensor()));
 
         List<TemperatureSensor> sensors = service.findAll();
         assertEquals(2, sensors.size());
     }
+
+
 }

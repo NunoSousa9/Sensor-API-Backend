@@ -25,7 +25,7 @@ public class TemperatureSensorController {
 
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public Optional<TemperatureSensor> getSensorById(@PathVariable String id) {
         return temperatureSensorService.findById(id);
     }
@@ -37,14 +37,14 @@ public class TemperatureSensorController {
 
     }
 
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public TemperatureSensor updateSensor(@PathVariable String id, @RequestBody TemperatureSensor sensorDetails) {
         sensorDetails.setId(id);
         return temperatureSensorService.save(sensorDetails);
 
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public void deleteSensor(@PathVariable String id) {
         temperatureSensorService.deleteById(id);
     }
