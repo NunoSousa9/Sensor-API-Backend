@@ -2,11 +2,8 @@ package com.example.sensorapi.controller;
 
 import com.example.sensorapi.model.LuminositySensor;
 import com.example.sensorapi.service.LuminositySensorService;
-import com.example.sensorapi.security.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;

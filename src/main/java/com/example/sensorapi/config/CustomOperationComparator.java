@@ -1,9 +1,7 @@
 package com.example.sensorapi.config;
 
-import io.swagger.v3.oas.models.PathItem;
-
 import java.util.Comparator;
-import java.util.Map;
+
 
 public class CustomOperationComparator implements Comparator<String> {
 

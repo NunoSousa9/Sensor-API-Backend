@@ -1,6 +1,7 @@
 package com.example.sensorapi.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.util.Map;
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+
     private final TokenUtil tokenUtil;
 
     public CustomAuthenticationSuccessHandler(TokenUtil tokenUtil) {
@@ -22,14 +24,21 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        String token = tokenUtil.generateToken(authentication.getName());
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        try {
+            String token = tokenUtil.generateToken(authentication.getName());
+            Map<String, String> tokenMap = new HashMap<>();
+            tokenMap.put("token", token);
 
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put("token", token);
-
-        response.setContentType("application/json");
-        new ObjectMapper().writeValue(response.getWriter(), tokenMap);
-        response.sendRedirect("/sensors");
+            response.setContentType("application/json");
+            new ObjectMapper().writeValue(response.getWriter(), tokenMap);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            Map<String, String> errorDetails = new HashMap<>();
+            errorDetails.put("error", "Token generation failed");
+            errorDetails.put("message", e.getMessage());
+            response.setContentType("application/json");
+            new ObjectMapper().writeValue(response.getWriter(), errorDetails);
+        }
     }
 }

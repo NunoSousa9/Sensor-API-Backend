@@ -1,12 +1,14 @@
 package com.example.sensorapi.config;
 
 import com.example.sensorapi.security.TokenUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import com.example.sensorapi.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
@@ -19,39 +21,44 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final TokenUtil tokenUtil;
 
-    public JwtAuthenticationFilter(TokenUtil tokenUtil) {
+    private final TokenUtil tokenUtil;
+    private final CustomUserDetailsService customUserDetailsService;
+
+
+    @Autowired
+    public JwtAuthenticationFilter(TokenUtil tokenUtil, @Lazy CustomUserDetailsService customUserDetailsService) {
         this.tokenUtil = tokenUtil;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+        String jwt = extractJwtFromRequest(request);
 
-        String authHeader = request.getHeader("Authorization");
+        if (StringUtils.hasText(jwt) && tokenUtil.validateToken(jwt)) {
+            String username = tokenUtil.getUsernameFromJWT(jwt);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            try {
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(tokenUtil.getKey())
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody();
+            var userDetails = customUserDetailsService.loadUserByUsername(username);
 
-                String username = claims.getSubject();
+            if (userDetails != null) {
+                var authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null, null);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            } catch (Exception e) {
-                logger.warn("JWT token validation failed", e);
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
 
         chain.doFilter(request, response);
+    }
+
+    private String extractJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+
+        return null;
     }
 }
