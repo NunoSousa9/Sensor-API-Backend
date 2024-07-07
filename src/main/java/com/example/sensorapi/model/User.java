@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Document(collection = "users")
 public class User implements UserDetails {
@@ -17,6 +18,7 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
+    private List<String> roles;
 
     public User(String username, String password) {
         this.username = username;
@@ -37,6 +39,14 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 
     @Override
@@ -73,4 +83,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

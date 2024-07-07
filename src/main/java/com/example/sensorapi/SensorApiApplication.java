@@ -9,7 +9,7 @@ import org.springframework.context.annotation.FilterType;
 import java.util.logging.Logger;
 
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.example.sensorapi")
 @EnableFeignClients(basePackages = "com.example.sensorapi")
 @ComponentScan(basePackages = "com.example.sensorapi", excludeFilters = @ComponentScan.Filter(pattern = "com\\.example\\.sensorapi\\.config\\.RabbitMQConfig", type = FilterType.REGEX))
 public class SensorApiApplication {

@@ -1,45 +1,54 @@
 package com.example.sensorapi.controller;
 
-import com.example.sensorapi.model.AuthRequest;
-import com.example.sensorapi.model.AuthResponse;
 import com.example.sensorapi.security.TokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.util.logging.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private static final Logger LOGGER = Logger.getLogger(AuthController.class.getName());
-
-
     private final AuthenticationManager authenticationManager;
     private final TokenUtil tokenUtil;
 
-    @Autowired
     public AuthController(AuthenticationManager authenticationManager, TokenUtil tokenUtil) {
         this.authenticationManager = authenticationManager;
         this.tokenUtil = tokenUtil;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+
+        System.out.println("Received login request");
+        System.out.println("Username: " + username);
+        System.out.println("Password: " + password);
+
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-            String token = tokenUtil.generateToken(authentication.getName());
-            LOGGER.info("Token generated for username: " + authRequest.getUsername());
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
 
-            return ResponseEntity.ok(new AuthResponse(token));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = tokenUtil.generateToken(username);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
-            LOGGER.warning("Authentication failed for username: " + authRequest.getUsername());
-            return ResponseEntity.status(401).body(new AuthResponse(null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
         }
     }
 }

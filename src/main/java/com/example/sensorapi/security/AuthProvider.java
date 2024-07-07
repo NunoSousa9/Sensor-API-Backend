@@ -11,16 +11,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class AuthProvider implements AuthenticationProvider {
 
+    private final CustomUserDetailsService userDetailsService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthProvider(CustomUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
