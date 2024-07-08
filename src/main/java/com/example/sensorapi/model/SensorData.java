@@ -1,5 +1,6 @@
 package com.example.sensorapi.model;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,7 +18,7 @@ public abstract class SensorData {
 
     private String type;
 
-    @NotNull(message = "Timestamp cannot be null")
+    @CreatedDate
     private LocalDateTime timestamp;
 
     public String getId() {
