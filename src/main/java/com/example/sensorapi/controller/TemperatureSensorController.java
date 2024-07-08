@@ -1,7 +1,9 @@
 package com.example.sensorapi.controller;
 
+import com.example.sensorapi.model.SensorData;
 import com.example.sensorapi.model.TemperatureSensor;
 import com.example.sensorapi.service.TemperatureSensorService;
+import com.example.sensorapi.service.UIDSequenceGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,9 @@ public class TemperatureSensorController {
 
     @Autowired
     private TemperatureSensorService temperatureSensorService;
+
+    @Autowired
+    private UIDSequenceGeneratorService uidSequenceGeneratorService;
 
     @GetMapping
     public List<TemperatureSensor> getAll() {
@@ -30,6 +35,7 @@ public class TemperatureSensorController {
     @PostMapping
     public TemperatureSensor createSensor(@RequestBody @Valid TemperatureSensor sensorData) {
         sensorData.setType("temperature");
+        sensorData.setUid(uidSequenceGeneratorService.generateSequence(SensorData.SEQUENCE_NAME));
         return temperatureSensorService.save(sensorData);
 
     }

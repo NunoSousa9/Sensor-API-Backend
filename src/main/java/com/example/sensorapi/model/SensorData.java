@@ -10,11 +10,12 @@ import java.time.LocalDateTime;
 
 @Document(collection = "sensors")
 public abstract class SensorData {
+
+    public static final String SEQUENCE_NAME = "sensor_sequence";
     @Id
     private String id;
 
-    @NotNull(message = "UID cannot be null")
-    private String uid;
+    private long uid;
 
     private String type;
 
@@ -29,11 +30,11 @@ public abstract class SensorData {
         this.id = id;
     }
 
-    public String getUid() {
+    public long getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public void setUid(long uid) {
         this.uid = uid;
     }
 

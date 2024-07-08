@@ -21,8 +21,11 @@ public class TemperatureSensor extends SensorData {
     public void setValue(Object value) {
         if(value instanceof Double) {
             this.value = (Double) value;
+        } else if (value instanceof String) {
+            this.value = Double.parseDouble((String) value);
         } else {
             throw new IllegalArgumentException("Value must be a Double");
         }
+
     }
 }

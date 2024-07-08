@@ -1,7 +1,9 @@
 package com.example.sensorapi.controller;
 
 import com.example.sensorapi.model.LuminositySensor;
+import com.example.sensorapi.model.SensorData;
 import com.example.sensorapi.service.LuminositySensorService;
+import com.example.sensorapi.service.UIDSequenceGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,9 @@ public class LuminositySensorController {
     @Autowired
     private LuminositySensorService luminositySensorService;
 
+    @Autowired
+    private UIDSequenceGeneratorService uidSequenceGeneratorService;
+
     @GetMapping
     public List<LuminositySensor> getAll() {
         return luminositySensorService.findAll();
@@ -29,6 +34,7 @@ public class LuminositySensorController {
     @PostMapping
     public LuminositySensor createSensor(@RequestBody @Valid LuminositySensor sensorData) {
         sensorData.setType("luminosity");
+        sensorData.setUid(uidSequenceGeneratorService.generateSequence(SensorData.SEQUENCE_NAME));
         return luminositySensorService.save(sensorData);
     }
 
