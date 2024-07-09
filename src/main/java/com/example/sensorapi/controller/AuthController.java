@@ -1,6 +1,7 @@
 package com.example.sensorapi.controller;
 
 import com.example.sensorapi.security.TokenUtil;
+import com.example.sensorapi.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,12 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final TokenUtil tokenUtil;
+    private final UserService userService;
 
-    public AuthController(AuthenticationManager authenticationManager, TokenUtil tokenUtil) {
+    public AuthController(AuthenticationManager authenticationManager, TokenUtil tokenUtil, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.tokenUtil = tokenUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -49,6 +52,22 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody Map<String, String> registrationRequest) {
+        try {
+            String username = registrationRequest.get("username");
+            String password = registrationRequest.get("password");
+
+            userService.registerUser(username, password);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
 }

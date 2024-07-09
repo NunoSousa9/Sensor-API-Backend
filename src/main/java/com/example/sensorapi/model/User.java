@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Document(collection = "users")
 public class User implements UserDetails {
@@ -19,6 +20,9 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private List<String> roles;
+
+    public User() {
+    }
 
     public User(String username, String password) {
         this.username = username;
@@ -50,8 +54,10 @@ public class User implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override
