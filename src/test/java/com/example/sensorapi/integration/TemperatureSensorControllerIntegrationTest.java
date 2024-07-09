@@ -33,14 +33,12 @@ public class TemperatureSensorControllerIntegrationTest {
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-        repository.deleteAll(); // Clear the repository before each test
     }
 
     @Test
     public void testCreateAndGetSensor() throws Exception {
-        String sensorJson = "{\"value\": 25.5}";
+        String sensorJson = "{\"type\":\"temperature\", \"value\": 25.5}";
 
-        // Create Sensor
         MvcResult result = mockMvc.perform(post("/sensors/temperature")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(sensorJson))
@@ -48,19 +46,16 @@ public class TemperatureSensorControllerIntegrationTest {
                 .andExpect(jsonPath("$.value").value(25.5))
                 .andReturn();
 
-        // Extract UID and ID from response
         String responseJson = result.getResponse().getContentAsString();
-        Number uidNumber = JsonPath.read(responseJson, "$.uid");
-        Long uid = uidNumber.longValue();
+        Integer uidInt = JsonPath.read(responseJson, "$.uid");
+        Long uid = uidInt.longValue(); // Convert to Long if necessary
         String id = JsonPath.read(responseJson, "$.id");
 
-        // Verify Sensor in Database
         TemperatureSensor sensor = repository.findById(id).orElse(null);
         assertThat(sensor).isNotNull();
         assertThat(sensor.getUid()).isEqualTo(uid);
         assertThat(sensor.getValue()).isEqualTo(25.5);
 
-        // Get Sensor by ID
         mockMvc.perform(get("/sensors/temperature/" + id)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

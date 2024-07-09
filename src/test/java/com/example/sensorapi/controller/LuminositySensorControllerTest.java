@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -22,6 +24,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@SpringBootTest
+@ActiveProfiles("test")
 public class LuminositySensorControllerTest {
 
 
@@ -77,8 +81,8 @@ public class LuminositySensorControllerTest {
         when(service.save(any(LuminositySensor.class))).thenReturn(sensor);
 
         mockMvc.perform(post("/sensors/luminosity")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"value\": 25}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"type\":\"luminosity\",\"value\": 25}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.type").value("luminosity"))
@@ -94,7 +98,7 @@ public class LuminositySensorControllerTest {
         mockMvc.perform(put("/sensors/luminosity/id")
                         .param("id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"uid\": \"123\", \"value\": 25}"))
+                        .content("{\"type\":\"luminosity\",\"uid\": \"123\", \"value\": 25}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"));
     }

@@ -8,7 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -23,6 +26,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@SpringBootTest
+@ActiveProfiles("test")
 public class TemperatureSensorControllerTest {
 
 
@@ -78,8 +83,8 @@ public class TemperatureSensorControllerTest {
         when(service.save(any(TemperatureSensor.class))).thenReturn(sensor);
 
         mockMvc.perform(post("/sensors/temperature")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"value\": 25.5}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"type\":\"temperature\",\"value\": 25.5}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.type").value("temperature"))
@@ -95,7 +100,7 @@ public class TemperatureSensorControllerTest {
         mockMvc.perform(put("/sensors/temperature/id")
                         .param("id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"uid\": \"123\", \"value\": 25.5}"))
+                        .content("{\"type\":\"temperature\",\"uid\": \"123\", \"value\": 25.5}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"));
     }

@@ -10,6 +10,7 @@ public class TemperatureSensor extends SensorData {
     @NotNull(message = "Value cannot be null")
     private Double value;
     public TemperatureSensor() {
+        setType("temperature");
     }
 
     @Override

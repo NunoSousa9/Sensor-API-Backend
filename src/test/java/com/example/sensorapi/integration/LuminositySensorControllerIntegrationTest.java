@@ -28,18 +28,17 @@ public class LuminositySensorControllerIntegrationTest {
     @Autowired
     private LuminositySensorRepository repository;
 
+
     private MockMvc mockMvc;
 
     @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-        repository.deleteAll();
     }
 
     @Test
     public void testCreateAndGetSensor() throws Exception {
-        String sensorJson = "{\"value\": 25}";
-
+        String sensorJson = "{\"type\":\"luminosity\", \"value\": 25}";
 
         MvcResult result = mockMvc.perform(post("/sensors/luminosity")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -48,18 +47,15 @@ public class LuminositySensorControllerIntegrationTest {
                 .andExpect(jsonPath("$.value").value(25))
                 .andReturn();
 
-
         String responseJson = result.getResponse().getContentAsString();
         Integer uidInt = JsonPath.read(responseJson, "$.uid");
         Long uid = uidInt.longValue(); // Convert to Long if necessary
         String id = JsonPath.read(responseJson, "$.id");
 
-
         LuminositySensor sensor = repository.findById(id).orElse(null);
         assertThat(sensor).isNotNull();
         assertThat(sensor.getUid()).isEqualTo(uid);
         assertThat(sensor.getValue()).isEqualTo(25);
-
 
         mockMvc.perform(get("/sensors/luminosity/" + id)
                         .contentType(MediaType.APPLICATION_JSON))
