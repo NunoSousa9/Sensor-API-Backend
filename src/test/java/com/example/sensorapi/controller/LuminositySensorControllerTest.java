@@ -2,6 +2,7 @@ package com.example.sensorapi.controller;
 
 import com.example.sensorapi.model.LuminositySensor;
 import com.example.sensorapi.service.LuminositySensorService;
+import com.example.sensorapi.service.UIDSequenceGeneratorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,6 +29,9 @@ public class LuminositySensorControllerTest {
 
     @Mock
     private LuminositySensorService service;
+
+    @Mock
+    private UIDSequenceGeneratorService uidSequenceGeneratorService;
 
     @InjectMocks
     private LuminositySensorController controller;
@@ -67,14 +71,18 @@ public class LuminositySensorControllerTest {
         LuminositySensor sensor = new LuminositySensor();
         sensor.setId("1");
         sensor.setType("luminosity");
+        sensor.setUid(123L);
+
+        when(uidSequenceGeneratorService.generateSequence(anyString())).thenReturn(123L);
         when(service.save(any(LuminositySensor.class))).thenReturn(sensor);
 
         mockMvc.perform(post("/sensors/luminosity")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"uid\": \"123\", \"value\": 25}"))
+                .content("{\"value\": 25}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"))
-                .andExpect(jsonPath("$.type").value("luminosity"));
+                .andExpect(jsonPath("$.type").value("luminosity"))
+                .andExpect(jsonPath("$.uid").value(123L));
     }
 
     @Test

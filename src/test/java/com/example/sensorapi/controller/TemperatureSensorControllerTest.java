@@ -2,6 +2,7 @@ package com.example.sensorapi.controller;
 
 import com.example.sensorapi.model.TemperatureSensor;
 import com.example.sensorapi.service.TemperatureSensorService;
+import com.example.sensorapi.service.UIDSequenceGeneratorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,6 +30,9 @@ public class TemperatureSensorControllerTest {
 
     @Mock
     private TemperatureSensorService service;
+
+    @Mock
+    private UIDSequenceGeneratorService uidSequenceGeneratorService;
 
     @InjectMocks
     private TemperatureSensorController controller;
@@ -68,14 +72,18 @@ public class TemperatureSensorControllerTest {
         TemperatureSensor sensor = new TemperatureSensor();
         sensor.setId("1");
         sensor.setType("temperature");
+        sensor.setUid(123L);
+
+        when(uidSequenceGeneratorService.generateSequence(anyString())).thenReturn(123L);
         when(service.save(any(TemperatureSensor.class))).thenReturn(sensor);
 
         mockMvc.perform(post("/sensors/temperature")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"uid\": \"123\", \"value\": 25.5}"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"value\": 25.5}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"))
-                .andExpect(jsonPath("$.type").value("temperature"));
+                .andExpect(jsonPath("$.type").value("temperature"))
+                .andExpect(jsonPath("$.uid").value(123L));
     }
 
     @Test
