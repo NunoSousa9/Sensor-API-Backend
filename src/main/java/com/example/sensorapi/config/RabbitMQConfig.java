@@ -5,6 +5,7 @@ import org.springframework.amqp.core.Queue;
 import com.example.sensorapi.service.RabbitMQConsumerService;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
@@ -20,7 +21,12 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue queue() {
-        return new Queue(SENSOR_DATA_QUEUE, false);
+        return new Queue(SENSOR_DATA_QUEUE, true);
+    }
+
+    @Bean
+    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        return new RabbitAdmin(connectionFactory);
     }
 
     @Bean

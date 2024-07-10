@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: sensor-api
+  data:
+    mongodb:
+      uri: mongodb://mongo:27017/sensor_db
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    queue: sensor-data-queue
+
+server:
+  port: 8080
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+jwt:
+  secret: 5pny6PXOXAJHT3uLVV0pLLEZnW+qXHOSinqMOlkUU0vY2B7S7F4ePV9l+gqFl1uXVRq25WPcUoa369jd7jwVVw==
+
+logging:
+  level:
+    com.example.sensorapi: DEBUG
+
